@@ -4,6 +4,7 @@ import ENV  from "./config/env.js";
 import { clerkMiddleware } from '@clerk/express'
 import {serve} from "inngest/express";
 import {functions,inngest} from "./config/inngest.js";
+import adminRouter from "./routes/admin.route.js";
 const app = express();
 dbConnect();
 
@@ -15,6 +16,9 @@ app.use('/api/inngest',serve({client:inngest,functions,signingKey: process.env.I
 app.get("/", (req, res) => {
     res.send("Hello World!");
 });
+
+app.use("/api/admin", adminRouter);
+
 app.listen(ENV.PORT, () => {
     console.log(`Server is running on port ${ENV.PORT}`);
 });
