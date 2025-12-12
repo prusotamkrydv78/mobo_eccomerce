@@ -10,7 +10,7 @@ dbConnect();
 
  app.use(express.json())
 app.use(clerkMiddleware())
-app.use('/api/inngest',serve({client:inngest,functions}))
+app.use('/api/inngest',serve({client:inngest,functions,signingKey: process.env.INNGEST_SIGN_KEY,}))
 
 app.get("/", (req, res) => {
     res.send("Hello World!");
