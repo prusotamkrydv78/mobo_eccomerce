@@ -6,6 +6,7 @@ import { serve } from "inngest/express";
 import { functions, inngest } from "./config/inngest.js";
 import adminRouter from "./routes/admin.route.js";
 import userRouter from "./routes/user.route.js";
+import orderRouter from "./routes/order.route.js";
 const app = express();
 dbConnect();
 
@@ -20,6 +21,11 @@ app.get("/", (req, res) => {
 
 app.use("/api/admin", adminRouter);
 app.use("/api/user", userRouter);
+
+app.use("/api/order", orderRouter)
+app.use("/api/review", reviewRouter)
+app.use("/api/products", productRouter)
+
 
 app.listen(ENV.PORT, () => {
     console.log(`Server is running on port ${ENV.PORT}`);
