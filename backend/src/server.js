@@ -7,6 +7,10 @@ import { functions, inngest } from "./config/inngest.js";
 import adminRouter from "./routes/admin.route.js";
 import userRouter from "./routes/user.route.js";
 import orderRouter from "./routes/order.route.js";
+import productRouter from "./routes/product.route.js";
+import reviewRouter from "./routes/review.route.js";
+import cartRouter from "./routes/cart.route.js";
+import wishlistRouter from "./routes/wishlist.route.js";
 const app = express();
 dbConnect();
 
@@ -25,6 +29,8 @@ app.use("/api/user", userRouter);
 app.use("/api/order", orderRouter)
 app.use("/api/review", reviewRouter)
 app.use("/api/products", productRouter)
+app.use("/api/cart", cartRouter)
+app.use("/api/wishlist", wishlistRouter)
 
 
 app.listen(ENV.PORT, () => {
