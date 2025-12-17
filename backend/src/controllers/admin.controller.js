@@ -1,6 +1,7 @@
 import cloudinary from "../config/cloudinary.js";
 import Order from "../models/order.model.js";
 import Product from "../models/product.model.js";
+import User from "../models/user.model.js";
 const getProduct = async (req, res) => {
   try {
     const products = await Product.find().sort({ createdAt: -1 });
@@ -32,15 +33,16 @@ const createProduct = async (req, res) => {
       return res.status(400).json({ message: "Images are required" });
     }
     const uploadImages = await Promise.all(
-      images.map((image) => cloudinary.v2.uploader.upload(image))
+      images.map((image) => cloudinary.uploader.upload(image))
     );
     const imagesUrls = uploadImages.map((image) => image.secure_url);
+
 
     const product = await Product.create({
       name,
       description,
       price,
-      images: imagesUrls,
+      imageUrls: imagesUrls,
       category,
     });
     return res.status(201).json({ product });
@@ -72,7 +74,7 @@ const updateProduct = async (req, res) => {
       return res.status(400).json({ message: "Images are required" });
     }
     const uploadImages = await Promise.all(
-      images.map((image) => cloudinary.v2.uploader.upload(image))
+      images.map((image) => cloudinary.uploader.upload(image))
     );
     const imagesUrls = uploadImages.map((image) => image.secure_url);
     const product = await Product.findByIdAndUpdate(
@@ -187,5 +189,3 @@ export {
   getAllCustomers,
   getDashboardStats,
 };
-
-

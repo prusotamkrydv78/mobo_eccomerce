@@ -10,3 +10,5 @@ ReviewRouter.get("/reviews/:reviewId", getReview)
 ReviewRouter.post("/reviews", createReview)
 ReviewRouter.delete("/reviews/:reviewId", deleteReview)
 ReviewRouter.put("/reviews/:reviewId", updateReview)
+
+export default ReviewRouter
