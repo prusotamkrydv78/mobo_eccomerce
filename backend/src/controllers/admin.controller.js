@@ -37,7 +37,6 @@ const createProduct = async (req, res) => {
     );
     const imagesUrls = uploadImages.map((image) => image.secure_url);
 
-
     const product = await Product.create({
       name,
       description,
@@ -83,7 +82,7 @@ const updateProduct = async (req, res) => {
         name,
         description,
         price,
-        images: imagesUrls,
+        imageUrls: imagesUrls,
         category,
       },
       {

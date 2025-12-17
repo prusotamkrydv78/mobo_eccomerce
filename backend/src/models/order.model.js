@@ -27,7 +27,7 @@ const shippingAddressSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  streetAdress: {
+  streetAddress: {
     type: String,
     required: true,
   },
@@ -78,7 +78,7 @@ const orderSchema = new mongoose.Schema(
     status: {
       type: String,
       required: true,
-      enum: ["pending", "completed", "failed"],
+      enum: ["pending", "completed", "failed", "shipped", "cancelled"],
       default: "pending",
     },
     deliveredAt: {
