@@ -25,7 +25,7 @@ const getProductById = async (req, res) => {
 
 const createProduct = async (req, res) => {
   try {
-    const { name, description, price, images, category } = req.body;
+    const { name, description, price, stock, images, category } = req.body;
     if (!name || !description || !price || !images || !category) {
       return res.status(400).json({ message: "All fields are required" });
     }
@@ -41,6 +41,7 @@ const createProduct = async (req, res) => {
       name,
       description,
       price,
+      stock: Number(stock) || 0,
       imageUrls: imagesUrls,
       category,
     });
@@ -65,7 +66,7 @@ const deleteProduct = async (req, res) => {
 const updateProduct = async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, description, price, images, category } = req.body;
+    const { name, description, price, stock, images, category } = req.body;
     if (!name || !description || !price || !images || !category) {
       return res.status(400).json({ message: "All fields are required" });
     }
@@ -82,6 +83,7 @@ const updateProduct = async (req, res) => {
         name,
         description,
         price,
+        stock: Number(stock) || 0,
         imageUrls: imagesUrls,
         category,
       },
@@ -148,8 +150,25 @@ const updateOrderStatus = async (req, res) => {
 
 const getAllCustomers = async (req, res) => {
   try {
-    const customers = await User.find().sort({ createdAt: -1 });
-    return res.status(200).json({ customers });
+    const customers = await User.find().sort({ createdAt: -1 }).lean();
+
+    // Calculate stats for each customer
+    const customersWithStats = await Promise.all(
+      customers.map(async (customer) => {
+        const orders = await Order.find({ userId: customer._id });
+        const totalSpent = orders.reduce(
+          (sum, order) => sum + (order.totalPrice || 0),
+          0
+        );
+        return {
+          ...customer,
+          totalOrders: orders.length,
+          totalSpent,
+        };
+      })
+    );
+
+    return res.status(200).json({ customers: customersWithStats });
   } catch (error) {
     console.log("Error in getAllCustomers controller", error);
     return res.status(500).json({ message: "Internal Server Error" });

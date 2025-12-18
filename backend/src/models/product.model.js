@@ -30,6 +30,10 @@ const productSchema = new mongoose.Schema(
         message: "Stock must be a non-negative number",
       },
     },
+    sold: {
+      type: Number,
+      default: 0,
+    },
     imageUrls: {
       type: [String],
       required: true,

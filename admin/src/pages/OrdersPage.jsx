@@ -3,47 +3,28 @@ import axiosInstance from "../lib/axios";
 import { CheckCircle, Clock, Truck, XCircle, Package, Search, Calendar, User, DollarSign, ArrowUpRight, ArrowDownRight } from "lucide-react";
 import toast from "react-hot-toast";
 import LoadingSpinner from "../components/LoadingSpinner";
-import Button from "../components/Button";
+import Button from "../components/Button"; 
+
+import { useApi, useMutation } from "../components/hooks/useApi";
 
 const OrdersPage = () => {
-    const [orders, setOrders] = useState([]);
     const [filterStatus, setFilterStatus] = useState("all");
-    const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState("");
-    const [statusLoading, setStatusLoading] = useState(null);
     const [expandedOrders, setExpandedOrders] = useState(new Set());
 
-    useEffect(() => {
-        fetchOrders();
-    }, []);
-
-    const fetchOrders = async () => {
-        try {
-            setLoading(true);
-            const res = await axiosInstance.get("/admin/orders");
-            setOrders(res.data.orders || []);
-        } catch (error) {
-            toast.error("Failed to fetch orders");
-        } finally {
-            setLoading(false);
+    // Use custom hook for fetching orders
+    const { data: ordersData, loading, refetch: refetchOrders } = useApi('/admin/orders');
+    const { mutate: updateStatus, loading: statusUpdateLoading } = useMutation('/admin/order', {
+        onSuccess: () => {
+            refetchOrders();
+            toast.success("Order status updated successfully");
         }
-    };
+    });
+
+    const orders = ordersData?.orders || [];
 
     const handleStatusChange = async (orderId, newStatus) => {
-        try {
-            setStatusLoading(orderId);
-            await axiosInstance.patch(`/admin/order/${orderId}/status`, { status: newStatus });
-            toast.success("Order status updated successfully");
-            setOrders(prev => prev.map(order => 
-                order._id === orderId 
-                    ? { ...order, status: newStatus }
-                    : order
-            ));
-        } catch (error) {
-            toast.error("Failed to update status");
-        } finally {
-            setStatusLoading(null);
-        }
+        await updateStatus({ status: newStatus }, 'patch', `/admin/order/${orderId}/status`);
     };
 
     const getStatusIcon = (status) => {
@@ -300,7 +281,7 @@ const OrdersPage = () => {
                                         </div>
                                         
                                         <div className="relative">
-                                            {statusLoading === order._id ? (
+                                            {statusUpdateLoading ? (
                                                 <div className="px-3 py-2 bg-slate-100 rounded-lg">
                                                     <LoadingSpinner size="sm" />
                                                 </div>

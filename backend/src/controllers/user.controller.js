@@ -2,13 +2,14 @@ import User from "../models/user.model.js";
 
 const addAddress = async (req, res) => {
   try {
-    const { userId } = req.user;
+    const { _id: userId } = req.user;
     const {
       label,
       fullName,
       streetAddress,
       city,
       state,
+      country,
       zipCode,
       phoneNumber,
       isDefault,
@@ -19,6 +20,7 @@ const addAddress = async (req, res) => {
       streetAddress,
       city,
       state,
+      country,
       zipCode,
       phoneNumber,
       isDefault,
@@ -40,7 +42,7 @@ const addAddress = async (req, res) => {
 
 const getAddresses = async (req, res) => {
   try {
-    const { userId } = req.user;
+    const { _id: userId } = req.user;
     const user = await User.findById(userId);
     res.status(200).json({ addresses: user.addresses });
   } catch (error) {
@@ -49,7 +51,7 @@ const getAddresses = async (req, res) => {
 };
 const updateAddress = async (req, res) => {
   try {
-    const { userId } = req.user;
+    const { _id: userId } = req.user;
     const { addressId } = req.params;
     const {
       label,
@@ -57,6 +59,7 @@ const updateAddress = async (req, res) => {
       streetAddress,
       city,
       state,
+      country,
       zipCode,
       phoneNumber,
       isDefault,
@@ -67,6 +70,7 @@ const updateAddress = async (req, res) => {
       streetAddress,
       city,
       state,
+      country,
       zipCode,
       phoneNumber,
       isDefault,
@@ -90,7 +94,7 @@ const updateAddress = async (req, res) => {
 };
 const deleteAddress = async (req, res) => {
   try {
-    const { userId } = req.user;
+    const { _id: userId } = req.user;
     const { addressId } = req.params;
     const user = await User.findById(userId);
     // user.addresses.id(addressId).remove()
@@ -104,8 +108,8 @@ const deleteAddress = async (req, res) => {
 
 const addToWishlist = async (req, res) => {
   try {
-    const { userId } = req.user;
-    const { productId } = req.params;
+    const { _id: userId } = req.user;
+    const { productId } = req.body;
     const user = await User.findById(userId);
     if (user.wishlist.includes(productId)) {
       return res.status(400).json({ message: "Product already in wishlist" });
@@ -120,7 +124,7 @@ const addToWishlist = async (req, res) => {
 
 const getWishlist = async (req, res) => {
   try {
-    const { userId } = req.user;
+    const { _id: userId } = req.user;
     const user = await User.findById(userId);
     res.status(200).json({ wishlist: user.wishlist });
   } catch (error) {
@@ -130,7 +134,7 @@ const getWishlist = async (req, res) => {
 
 const removeFromWishlist = async (req, res) => {
   try {
-    const { userId } = req.user;
+    const { _id: userId } = req.user;
     const { productId } = req.params;
     const user = await User.findById(userId);
     user.wishlist.pull(productId);

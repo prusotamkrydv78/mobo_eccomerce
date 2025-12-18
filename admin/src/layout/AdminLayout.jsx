@@ -26,7 +26,16 @@ const AdminLayout = () => {
     return (
         <div className="min-h-screen bg-slate-100 flex">
             <SignedOut>
-                <RedirectToSignIn />
+                <div className="flex h-screen items-center justify-center flex-col gap-4">
+                    <p className="text-slate-600">Redirecting to Google Login...</p>
+                    <div className="w-8 h-8 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin"></div>
+                </div>
+                {/* 
+                  To force Google Login, we use useClerk hook or simply RedirectToSignIn.
+                  For a better experience, we use RedirectToSignIn below, 
+                  but you can also use authenticateWithRedirect for direct OAuth bypass.
+                */}
+                <RedirectToSignIn signInForceRedirectUrl={window.location.origin} />
             </SignedOut>
 
             <SignedIn>

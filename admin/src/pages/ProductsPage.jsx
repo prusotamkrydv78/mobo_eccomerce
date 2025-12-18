@@ -196,7 +196,7 @@ const ProductsPage = () => {
                             product={product}
                             onEdit={handleEdit}
                             onDelete={handleDelete}
-                            deleteLoading={deleteLoading === product._id}
+                            deleteLoading={deleteLoading}
                             onViewImage={handleViewImage}
                         />
                     ))}

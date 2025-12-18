@@ -4,33 +4,19 @@ import { Users, Search, Calendar, Mail, UserPlus, Activity, DollarSign, Shopping
 import toast from "react-hot-toast";
 import LoadingSpinner from "../components/LoadingSpinner";
 import Button from "../components/Button";
-
+import { useApi, useMutation } from "../components/hooks/useApi";
 const UsersPage = () => {
-    const [users, setUsers] = useState([]);
     const [searchTerm, setSearchTerm] = useState("");
-    const [loading, setLoading] = useState(true);
     const [selectedUser, setSelectedUser] = useState(null);
 
-    useEffect(() => {
-        fetchUsers();
-    }, []);
-
-    const fetchUsers = async () => {
-        try {
-            setLoading(true);
-            const res = await axiosInstance.get("/admin/customers");
-            setUsers(res.data.customers || []);
-        } catch (error) {
-            toast.error("Failed to fetch users");
-        } finally {
-            setLoading(false);
-        }
-    };
+    // Use custom hook for fetching users
+    const { data: usersData, loading, refetch: refetchUsers } = useApi('/admin/customers');
+    const users = usersData?.customers || [];
 
     const filteredUsers = useMemo(() => {
         return users.filter(user => 
-            user.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            user.email?.toLowerCase().includes(searchTerm.toLowerCase())
+            (user.name?.toLowerCase() || "").includes(searchTerm.toLowerCase()) ||
+            (user.email?.toLowerCase() || "").includes(searchTerm.toLowerCase())
         );
     }, [users, searchTerm]);
 
@@ -43,11 +29,14 @@ const UsersPage = () => {
             return createdAt > thirtyDaysAgo;
         }).length;
         
+        const totalSpent = users.reduce((sum, user) => sum + (user.totalSpent || 0), 0);
+        const totalOrders = users.reduce((sum, user) => sum + (user.totalOrders || 0), 0);
+        
         return {
             total: totalUsers,
             recent: recentUsers,
-            avgOrdersPerUser: totalUsers > 0 ? Math.round(users.reduce((sum, user) => sum + (user.totalOrders || 0), 0) / totalUsers) : 0,
-            totalSpent: users.reduce((sum, user) => sum + (user.totalSpent || 0), 0)
+            avgOrdersPerUser: totalUsers > 0 ? Math.round(totalOrders / totalUsers) : 0,
+            totalSpent: totalSpent
         };
     }, [users]);
 
@@ -295,7 +284,7 @@ const UsersPage = () => {
                             </div>
 
                             <div className="space-y-4">
-                                <h4 className="font-semibold text-slate-800">Recent Activity</h4>
+                                <h4 className="font-semibold text-slate-800">Activity Overview</h4>
                                 <div className="space-y-3">
                                     <div className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
                                         <div className="flex items-center gap-3">
@@ -303,22 +292,14 @@ const UsersPage = () => {
                                                 <ShoppingBag size={16} className="text-emerald-600" />
                                             </div>
                                             <div>
-                                                <p className="font-medium text-slate-800">Order #12345</p>
-                                                <p className="text-sm text-slate-600">2 days ago</p>
+                                                <p className="font-medium text-slate-800">Total Purchase History</p>
+                                                <p className="text-sm text-slate-600">Based on all orders</p>
                                             </div>
                                         </div>
-                                        <span className="font-medium text-slate-800">$89.99</span>
+                                        <span className="font-medium text-slate-800">${(selectedUser.totalSpent || 0).toFixed(2)}</span>
                                     </div>
-                                    <div className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
-                                        <div className="flex items-center gap-3">
-                                            <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                                                <Activity size={16} className="text-blue-600" />
-                                            </div>
-                                            <div>
-                                                <p className="font-medium text-slate-800">Profile Updated</p>
-                                                <p className="text-sm text-slate-600">1 week ago</p>
-                                            </div>
-                                        </div>
+                                    <div className="p-3 bg-blue-50 rounded-lg border border-blue-100 italic text-sm text-blue-700">
+                                        Detailed activity timeline is currently being aggregated from order history.
                                     </div>
                                 </div>
                             </div>
