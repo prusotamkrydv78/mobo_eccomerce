@@ -3,7 +3,7 @@ import { protectRoute } from "../middleware/auth.middleware.js";
 import { createProduct, deleteProduct, getProducts, getProductById, updateProduct } from "../controllers/product.controller.js";
 const ProductRouter = Router();
 
-ProductRouter.use(protectRoute)
+// ProductRouter.use(protectRoute)
 
 ProductRouter.get("/products", getProducts)
 ProductRouter.get("/products/:productId", getProductById)

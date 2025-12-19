@@ -28,7 +28,7 @@ app.use("/api/user", userRouter);
 
 app.use("/api/order", orderRouter);
 app.use("/api/review", reviewRouter);
-app.use("/api/products", productRouter);
+app.use("/api", productRouter);
 app.use("/api/cart", cartRouter);
 app.use("/api/wishlist", wishlistRouter);
 
